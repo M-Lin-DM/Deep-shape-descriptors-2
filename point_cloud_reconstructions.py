@@ -16,8 +16,8 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # load_file = latent_filename
 load_file = model_filename
 
-dataset = Letters(DATASET_DIR, device, sigma)  # returns an entire point cloud [N, 3] as the training instance
-loader = DataLoader(dataset, batch_size=8, shuffle=False)
+dataset = Letters(DATASET_DIR, device, sigma, rotation=False)  # returns an entire point cloud [N, 3] as the training instance
+loader = DataLoader(dataset, batch_size=32, shuffle=False)
 shape_batch, shape_gt_batch, latent_indices = next(iter(loader))  # the noise added is random each time, so there's a kind of automatic data augmentation going on
 print(f"shape of model input: {shape_batch.shape}")
 
@@ -32,7 +32,7 @@ num_batch = len(loader)
 print(f"num_batch {num_batch}")
 
 model = DeepLatent(latent_length=latent_size, n_points_per_cloud=N, chamfer_weight=0.1)
-model, latent_vecs, optimizer = load_checkpoint(os.path.join(CHECKPOINT_DIR, load_file), model, None)
+model, latent_vecs, optimizer = load_checkpoint(os.path.join(CHECKPOINT_DIR, load_file), model, None, device)
 
 # try noiseing latent vects to see if it affects the predictions
 # for i, v in enumerate(latent_vecs):
@@ -55,12 +55,17 @@ pc_gt_list = pc_batch_to_data_matrices_list(shape_gt_batch)
 loss, pc_denoised = model(shape_batch, shape_gt_batch, latent_repeat)
 pc_denoised_list = pc_batch_to_data_matrices_list(pc_denoised)
 
-q = 2
-# plt.scatter(pc_gt_list[q][:, 0], pc_gt_list[q][:, 1], color='red', s=4)
-plt.scatter(pc_list[q][:, 0], pc_list[q][:, 1], color='blue', s=2)
-plt.scatter(pc_denoised_list[q][:, 0], pc_denoised_list[q][:, 1], color='green', s=4)
+q = 9
+fig = plt.figure(figsize=(10, 20))
+ax = fig.add_subplot(111)
+
+# ax.scatter(pc_gt_list[q][:, 0], pc_gt_list[q][:, 1], color='black', s=20)
+ax.scatter(pc_list[q][:, 0], pc_list[q][:, 1], color='blue', s=20)
+ax.scatter(pc_denoised_list[q][:, 0], pc_denoised_list[q][:, 1], color='red', s=20)
+
 
 # Set the labels and title
+ax.set_axis_off()
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.title('')

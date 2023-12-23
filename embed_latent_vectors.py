@@ -19,17 +19,17 @@ print(z_ts.shape)
 # emb = embed_tsne(z_ts, initial_pos=None)
 emb = embed_umap(z_ts)
 
-kmeans, labels, cluster_centers = kmeans_clustering(emb, 16)
-scatter3D(emb[:, :3], labels)
+kmeans, labels, cluster_centers = kmeans_clustering(z_ts, 26)
+# scatter3D(emb[:, :3], labels)
 # scatter3D(z_ts[:, :3], labels)
 # sys.exit()  # terminate execution
 
 dataset = Letters(DATASET_DIR, device, sigma, rotation=False)  # returns an entire point cloud [N, 3] as the training instance
 # shape_batch, shape_gt_batch, latent_indices = next(iter(dataset))
 
-num_clusters = 20
+num_clusters = 16
 grid_size = 8
-num_images = 64  # number of images to plot
+num_images = int(grid_size ** 2)  # number of images to plot
 fig_scale = 5
 fig_width = grid_size * fig_scale
 fig_height = grid_size * fig_scale
@@ -37,6 +37,7 @@ fig_height = grid_size * fig_scale
 # plot shapes from each cluster
 for c in range(num_clusters):
     cluster_ind = np.where(labels == c)[0]  # numpy array of indices of data points sharing a certain cluster ID
+    # cluster_ind = np.random.choice(26000, size=num_images)
     # print(len(cluster_ind))
 
     pc, pc_gt, index = dataset[

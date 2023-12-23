@@ -46,10 +46,10 @@ def load_checkpoint(save_name, model, optimizer, device):
         print('loading checkpoint!')
         model_CKPT = torch.load(save_name + '.pth')
         model.load_state_dict(model_CKPT['state_dict'])  # load weights into model
-        optimizer.load_state_dict(model_CKPT['optimizer'])
+        if optimizer:
+            optimizer.load_state_dict(model_CKPT['optimizer'])
 
     return model, z_lst, optimizer
-
 
 
 def pc_batch_to_data_matrices_list(pc_batch):

@@ -83,8 +83,9 @@ for epoch in range(wconfig.epochs):
         for param in model.parameters():
             l_parameters.append(param.view(-1))  # -1 flattens the param tensor
 
+        # apply l2 loss to specific layers!
         # for name, param in model.named_parameters():
-        #     if name in ['pdl_net.conv1.weight', 'pdl_net.conv1.bias', 'pdl_net.conv4.weight', 'pdl_net.conv4.bias']:  # apply l2 loss to specific layers!
+        #     if name in ['pdl_net.conv1.weight', 'pdl_net.conv1.bias', 'pdl_net.conv4.weight', 'pdl_net.conv4.bias']:
         #         l_parameters.append(param.view(-1))  # -1 flattens the param tensor
 
         L2 = wconfig.alpha * model.compute_L2_regularization_loss(
